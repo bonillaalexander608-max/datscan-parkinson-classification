@@ -1,8 +1,10 @@
 # DaT-SPECT classification under acquisition-protocol shift
 
-Reproducible machine-learning pipeline developed for a DrivenData competition to estimate the probability that a DaT-SPECT scan is pathologic. The project focuses on robustness under heterogeneous acquisition protocols rather than on leaderboard optimization alone.
+Documented training and evaluation workflow developed for a DrivenData competition to estimate the probability that a DaT-SPECT scan is pathologic. The project focuses on robustness under heterogeneous acquisition protocols rather than on leaderboard optimization alone. The source code and ordered experiments are reproducible with authorized access to the competition data; exact reproduction of the archived submission also requires the excluded trained weights.
 
 > **Research-use disclaimer:** this repository is an educational competition project. It is not a medical device, does not diagnose Parkinson's disease, and has not been clinically or externally validated.
+
+The prediction target is the competition label **pathologic DaT-SPECT pattern**. It is not a neurological diagnosis and must not be interpreted as one.
 
 ## Results
 
@@ -14,6 +16,27 @@ Reproducible machine-learning pipeline developed for a DrivenData competition to
 | Final private evaluation | 0.4471 | 0.8777 | Rank 254/1,009 (top 25.2%) |
 
 The private-score degradation is reported deliberately: it is the central generalization lesson of the project. The final executable combined a classical ROI/Fourier model, a multiview EfficientNet-B0 representation and a compact 3D CNN. Later protocol-shift experiments are retained separately and must not be confused with the submitted model.
+
+## Baselines and component evidence
+
+The project did not begin with the final ensemble. A CPU-compatible baseline used bilateral ROI and asymmetry features with Elastic Net logistic regression. The following result is retained as post-competition baseline evidence:
+
+| Model | Validation | Log loss | ROC AUC | Interpretation |
+|---|---|---:|---:|---|
+| ROI/asymmetry + Elastic Net | Stratified 5-fold OOF | 0.4418 | 0.8780 | Simple engineered-feature baseline |
+
+The archived submission metadata records the component and blend results below:
+
+| Model | Validation recorded in submission metadata | Log loss | ROC AUC |
+|---|---|---:|---:|
+| Previous ROI/Fourier/EfficientNet stack | OOF metadata | 0.3647 | Not recorded |
+| Stratified compact 3D CNN | OOF metadata | 0.4029 | Not recorded |
+| Grouped compact 3D CNN | OOF metadata | 0.4152 | Not recorded |
+| Stratified/grouped CNN hybrid | OOF metadata | 0.3804 | Not recorded |
+| Repeated cross-fitted final blend | 5 folds × 10 repeats | 0.3621 | 0.9160 |
+| Executed final blend | Bundled submission metadata | 0.3618 | 0.9194 |
+
+These rows document different stages and, in the case of the post-competition Elastic Net baseline, a different experiment. They are not presented as a single head-to-head benchmark. Their purpose is to show the progression from a simple baseline to the submitted ensemble without implying comparability that the available artifacts do not support. Machine-readable values are in [`results/component_metrics.csv`](results/component_metrics.csv).
 
 ## Dataset
 
@@ -32,6 +55,21 @@ The private-score degradation is reported deliberately: it is the central genera
 6. A cross-fitted bias/temperature calibration was applied after blending.
 
 The original submission description summarized this as a 55/45 hybrid. Inspection of the archived `main.py` showed the exact executable weights above; this repository reports the executed implementation.
+
+### Calibration provenance
+
+The executed prediction used:
+
+```text
+uncalibrated_logit = 0.634346 * previous_stack_logit
+                   + 0.365654 * cnn3d_stratified_logit
+
+final_logit = (uncalibrated_logit + 0.1311148068) / 0.7612935387
+```
+
+The metadata identifies the optimization as a repeated cross-fitted constrained logit blend with 5 folds and 10 repeats. Cross-fitting means that calibration parameters for a held-out fold are learned from the remaining folds, so a patient's label is not used to calibrate that patient's OOF prediction. The resulting repeated cross-fitted estimates were log loss 0.362112, ROC AUC 0.916002 and Brier score 0.111702. Notebook 05 contains an explicit fold-wise implementation comparing temperature scaling with Platt calibration; the archived constants above are the parameters executed by `src/submission/main.py`.
+
+Because the original optimization history and trained parameter files are not distributed, the repository documents and audits the executed calibration but does not claim byte-for-byte reproducibility of the submitted predictions.
 
 ## Post-competition robustness study
 
@@ -71,6 +109,12 @@ Copy `.env.example` to `.env`, set `DATSCAN_DATA_ROOT`, and reproduce the notebo
 
 Exact reproduction can vary with GPU hardware and library versions. Random seeds are fixed where possible, but some CUDA operations may remain nondeterministic.
 
+### Reproducibility levels
+
+- **Training/evaluation workflow:** reproducible with authorized access to the competition data and the documented environment.
+- **Inference source:** preserved in `src/submission/` and auditable, including the executed blend and calibration constants.
+- **Exact submitted predictions:** not reproducible from this repository alone because the trained `.pt`, `.joblib` and `.npz` files are excluded pending verification of redistribution terms.
+
 ## Validation design
 
 The submitted stack used stratified and grouped CNN families, while the post-competition study compared stratified folds with folds informed by latent acquisition protocols. Protocol-aware evaluation is a stress test for center/protocol shift. All preprocessing learned from data should be fitted within the training portion of each fold.
@@ -85,7 +129,7 @@ The submitted stack used stratified and grouped CNN families, while the post-com
 
 ## Versión breve en español
 
-Este repositorio documenta un pipeline reproducible para clasificar estudios DaT-SPECT en una competencia de DrivenData. El modelo final obtuvo Log Loss 0.4471, AUC 0.8777 y la posición 254 de 1,009 participantes. El trabajo se presenta como un estudio de generalización y cambio de protocolo, no como una herramienta diagnóstica. Para una aplicación en Nicaragua sería indispensable realizar validación externa con datos locales y colaboración clínica.
+Este repositorio documenta un flujo reproducible de entrenamiento y evaluación para clasificar la etiqueta de competencia de estudios DaT-SPECT. La reproducción exacta de la entrega requiere pesos que no se distribuyen en el repositorio. El modelo final obtuvo Log Loss 0.4471, AUC 0.8777 y la posición 254 de 1,009 participantes. El trabajo se presenta como un estudio de generalización y cambio de protocolo, no como una herramienta diagnóstica. Para una aplicación en Nicaragua sería indispensable realizar validación externa con datos locales y colaboración clínica.
 
 ## Citation
 
@@ -94,4 +138,3 @@ If this repository supports academic work, cite the repository and its archived 
 ## License
 
 Code is released under the MIT License. The dataset, competition materials and pretrained weights are excluded and remain subject to their respective terms.
-
