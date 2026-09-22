@@ -1,0 +1,36 @@
+# Private or competition data
+data/
+*.nii
+*.nii.gz
+*.dcm
+*.npy
+*.npz
+
+# Models and generated artifacts
+artifacts/
+outputs/
+checkpoints/
+submissions/
+*.pt
+*.pth
+*.ckpt
+*.joblib
+
+# Local configuration
+.env
+.venv/
+venv/
+
+# Python/Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
