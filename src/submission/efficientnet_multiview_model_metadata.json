@@ -1,0 +1,27 @@
+{
+    "model_name": "efficientnet_b0",
+    "pretrained_source": "ImageNet",
+    "input_height": 160,
+    "input_width": 160,
+    "number_of_views": 3,
+    "view_order": [
+        "axial",
+        "coronal",
+        "sagittal"
+    ],
+    "channels_per_view": [
+        "mip",
+        "slab_mean",
+        "central_slice"
+    ],
+    "view_embedding_dimension": 1280,
+    "total_embedding_dimension": 3840,
+    "logistic_regression_c": 0.0007,
+    "logistic_solver": "liblinear",
+    "ensemble_method": "logit",
+    "current_model_weight": 0.625,
+    "efficientnet_weight": 0.375,
+    "training_cases": 1362,
+    "normal_cases": 615,
+    "pathologic_cases": 747
+}

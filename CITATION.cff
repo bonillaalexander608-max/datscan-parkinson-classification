@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it as below."
+title: "DaT-SPECT classification under acquisition-protocol shift"
+type: software
+authors:
+  - family-names: "Bonilla"
+    given-names: "Alexander"
+date-released: 2026-09-22
+license: MIT
+version: 1.0.0
+

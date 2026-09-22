@@ -1,0 +1,74 @@
+{
+  "version": "cnn3d-stratified-optimized-v2",
+  "architecture": "CompactCNN3D",
+  "input_shape": [
+    2,
+    48,
+    64,
+    64
+  ],
+  "output_volume_shape_xyz": [
+    64,
+    64,
+    48
+  ],
+  "output_spacing_mm": 2.46,
+  "channels": [
+    "normalized_volume",
+    "signed_left_right_difference"
+  ],
+  "left_right_axis_tensor": 3,
+  "stratified_models": [
+    "cnn3d_strat_fold_1.pt",
+    "cnn3d_strat_fold_2.pt",
+    "cnn3d_strat_fold_3.pt",
+    "cnn3d_strat_fold_4.pt",
+    "cnn3d_strat_fold_5.pt"
+  ],
+  "grouped_models": [
+    "cnn3d_group_fold_1.pt",
+    "cnn3d_group_fold_2.pt",
+    "cnn3d_group_fold_3.pt",
+    "cnn3d_group_fold_4.pt",
+    "cnn3d_group_fold_5.pt"
+  ],
+  "cnn_strat_weight": 0.5,
+  "cnn_group_weight": 0.5,
+  "previous_ensemble_weight": 0.634346,
+  "cnn3d_hybrid_weight": 0.45,
+  "blend_space": "logit",
+  "normalization": {
+    "positive_percentile_low": 1.0,
+    "positive_percentile_high": 99.8,
+    "clip_range": [
+      0.0,
+      1.0
+    ]
+  },
+  "spatial_augmentation_training_only": {
+    "left_right_flip": true,
+    "shift_z": 1,
+    "shift_xy": 2
+  },
+  "validation": {
+    "cnn3d_stratified_log_loss": 0.4029107053,
+    "cnn3d_grouped_log_loss": 0.4151709048,
+    "cnn3d_hybrid_log_loss": 0.380357,
+    "final_blend_log_loss": 0.361771,
+    "final_blend_auc": 0.919448
+  },
+  "cnn_inference_family": "stratified_only",
+  "cnn3d_stratified_weight": 0.365654,
+  "final_bias": 0.13111480679778115,
+  "final_temperature": 0.7612935387043422,
+  "optimization": {
+    "method": "repeated_cross_fitted_constrained_logit_blend",
+    "n_splits": 5,
+    "n_repeats": 10,
+    "cross_fitted_log_loss": 0.36211221781695596,
+    "cross_fitted_auc": 0.9160022202631665,
+    "cross_fitted_brier": 0.11170249688969823,
+    "previous_stack_log_loss": 0.364716,
+    "previous_public_score": 0.4103
+  }
+}
