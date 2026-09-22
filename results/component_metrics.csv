@@ -1,0 +1,8 @@
+model,stage,validation,log_loss,roc_auc,brier,comparability_note
+roi_asymmetry_elastic_net,post_competition_baseline,stratified_5_fold_oof,0.441823,0.877966,,Separate post-competition baseline; not a direct head-to-head comparison with archived submission rows
+previous_roi_fourier_efficientnet_stack,archived_submission,OOF_metadata,0.364716,,,Recorded in archived CNN metadata
+compact_cnn3d_stratified,archived_submission,OOF_metadata,0.4029107053,,,Recorded in archived CNN metadata
+compact_cnn3d_grouped,archived_submission,OOF_metadata,0.4151709048,,,Recorded in archived CNN metadata
+cnn3d_stratified_grouped_hybrid,archived_submission,OOF_metadata,0.380357,,,Recorded in archived CNN metadata
+final_blend_repeated_cross_fitted,archived_submission,5_folds_x_10_repeats,0.3621122178,0.9160022203,0.1117024969,Repeated cross-fitted constrained logit blend
+final_blend_executed,archived_submission,bundled_submission_metadata,0.361771,0.919448,,Executed final blend recorded in metadata
