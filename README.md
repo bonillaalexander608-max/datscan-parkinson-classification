@@ -10,8 +10,8 @@ The prediction target is the competition label **pathologic DaT-SPECT pattern**.
 
 | Evaluation | Log loss | ROC AUC | Notes |
 |---|---:|---:|---|
-| Final blend OOF | 0.3618 | 0.9194 | Bundled submission metadata |
-| Repeated cross-fitted blend | 0.3621 | 0.9160 | Constrained logit blending |
+| Full-OOF optimized final blend | 0.3618 | 0.9194 | Optimistic in-sample fit reported by bundled metadata |
+| Repeated cross-fitted blend estimate | 0.3621 | 0.9160 | 5 folds × 10 repeats; preferred internal estimate |
 | Best result observed before final evaluation | 0.4103 | 0.8999 | Competition result during development |
 | Final private evaluation | 0.4471 | 0.8777 | Rank 254/1,009 (top 25.2%) |
 
@@ -34,7 +34,7 @@ The archived submission metadata records the component and blend results below:
 | Grouped compact 3D CNN | OOF metadata | 0.4152 | Not recorded |
 | Stratified/grouped CNN hybrid | OOF metadata | 0.3804 | Not recorded |
 | Repeated cross-fitted final blend | 5 folds × 10 repeats | 0.3621 | 0.9160 |
-| Executed final blend | Bundled submission metadata | 0.3618 | 0.9194 |
+| Executed final blend | Full-OOF optimized metadata | 0.3618 | 0.9194 |
 
 These rows document different stages and, in the case of the post-competition Elastic Net baseline, a different experiment. They are not presented as a single head-to-head benchmark. Their purpose is to show the progression from a simple baseline to the submitted ensemble without implying comparability that the available artifacts do not support. Machine-readable values are in [`results/component_metrics.csv`](results/component_metrics.csv).
 
@@ -52,7 +52,7 @@ These rows document different stages and, in the case of the post-competition El
 3. Compact two-channel 3D CNN using the normalized volume and signed left-right difference.
 4. Five stratified and five grouped CNN checkpoints were bundled for inference and diagnostics.
 5. The executed final blend used 63.4346% of the previous stack and 36.5654% of the stratified CNN family in logit space.
-6. A cross-fitted bias/temperature calibration was applied after blending.
+6. An affine logit calibration (bias plus temperature scaling) was applied after blending. Its deployed constants were refit on the complete OOF predictions after model selection; repeated cross-fitting was used to estimate internal performance.
 
 The original submission description summarized this as a 55/45 hybrid. Inspection of the archived `main.py` showed the exact executable weights above; this repository reports the executed implementation.
 
@@ -67,7 +67,9 @@ uncalibrated_logit = 0.634346 * previous_stack_logit
 final_logit = (uncalibrated_logit + 0.1311148068) / 0.7612935387
 ```
 
-The metadata identifies the optimization as a repeated cross-fitted constrained logit blend with 5 folds and 10 repeats. Cross-fitting means that calibration parameters for a held-out fold are learned from the remaining folds, so a patient's label is not used to calibrate that patient's OOF prediction. The resulting repeated cross-fitted estimates were log loss 0.362112, ROC AUC 0.916002 and Brier score 0.111702. Notebook 05 contains an explicit fold-wise implementation comparing temperature scaling with Platt calibration; the archived constants above are the parameters executed by `src/submission/main.py`.
+Model and calibration selection used a repeated cross-fitted constrained logit procedure with 5 folds and 10 repeats. In that evaluation, parameters for each held-out fold were learned from the remaining folds, so a patient's label was not used to transform that patient's cross-fitted prediction. The resulting internal estimates were log loss 0.362112, ROC AUC 0.916002 and Brier score 0.111702.
+
+The constants executed by `src/submission/main.py` were subsequently refit on all available OOF predictions. Therefore, the full-OOF value 0.361771 is an in-sample optimized quantity and is expected to be slightly optimistic; 0.362112 is the more defensible internal performance estimate. Notebook 05 demonstrates fold-wise temperature and Platt calibration for the later protocol study, but it is not the source of the deployed submission constants.
 
 Because the original optimization history and trained parameter files are not distributed, the repository documents and audits the executed calibration but does not claim byte-for-byte reproducibility of the submitted predictions.
 
@@ -85,6 +87,7 @@ The numbered notebooks extend the competition work with latent protocol clusteri
 │   └── submission/     # Exact inference source from the archived submission
 ├── results/            # Small, shareable result summaries
 ├── docs/               # Additional project documentation
+├── scripts/            # Data-free repository validation
 ├── .env.example        # Local path configuration
 └── requirements.txt
 ```
@@ -107,7 +110,17 @@ pip install -r requirements.txt
 
 Copy `.env.example` to `.env`, set `DATSCAN_DATA_ROOT`, and reproduce the notebooks in numerical order. Generated arrays, checkpoints, raw scans and submissions are ignored by Git. Trained weights are not committed in the source repository; see the model card for their role and release considerations.
 
+The notebooks are intentionally interactive. Notebooks 02, 03 and 06 stop at visual quality-control gates until the user reviews the generated figures and changes the corresponding approval flag. Notebook 08 also requires an explicitly selected and approved OOF reference file; that restricted/generated artifact is not redistributed. See [`docs/reproduction.md`](docs/reproduction.md) before running the sequence.
+
 Exact reproduction can vary with GPU hardware and library versions. Random seeds are fixed where possible, but some CUDA operations may remain nondeterministic.
+
+Static checks that do not require competition data can be run with:
+
+```bash
+python scripts/validate_repository.py
+```
+
+The same check runs in GitHub Actions on every push and pull request.
 
 ### Reproducibility levels
 
@@ -126,6 +139,8 @@ The submitted stack used stratified and grouped CNN families, while the post-com
 - No external Nicaraguan or Latin American clinical cohort was available.
 - Performance estimates do not establish clinical utility, safety or transportability.
 - The final private score shows a meaningful generalization gap.
+- Left-right features depend on trustworthy NIfTI orientation metadata. Incorrect or identity affines after DICOM conversion can invalidate signed asymmetry features.
+- The post-competition protocol comparisons currently lack bootstrap confidence intervals in the public summary and should be treated as exploratory.
 
 ## Versión breve en español
 

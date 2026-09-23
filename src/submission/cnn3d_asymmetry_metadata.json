@@ -32,11 +32,20 @@
     "cnn3d_group_fold_4.pt",
     "cnn3d_group_fold_5.pt"
   ],
-  "cnn_strat_weight": 0.5,
-  "cnn_group_weight": 0.5,
-  "previous_ensemble_weight": 0.634346,
-  "cnn3d_hybrid_weight": 0.45,
   "blend_space": "logit",
+  "diagnostic_cnn_hybrid": {
+    "stratified_weight": 0.5,
+    "grouped_weight": 0.5,
+    "used_in_executed_final_prediction": false
+  },
+  "final_inference": {
+    "cnn_family": "stratified_only",
+    "previous_full_stack_weight": 0.634346,
+    "cnn3d_stratified_weight": 0.365654,
+    "calibration_bias": 0.13111480679778115,
+    "calibration_temperature": 0.7612935387043422,
+    "deployed_parameter_fit": "refit_on_complete_oof_after_cross_fitted_selection"
+  },
   "normalization": {
     "positive_percentile_low": 1.0,
     "positive_percentile_high": 99.8,
@@ -54,15 +63,11 @@
     "cnn3d_stratified_log_loss": 0.4029107053,
     "cnn3d_grouped_log_loss": 0.4151709048,
     "cnn3d_hybrid_log_loss": 0.380357,
-    "final_blend_log_loss": 0.361771,
-    "final_blend_auc": 0.919448
+    "full_oof_optimized_final_blend_log_loss": 0.361771,
+    "full_oof_optimized_final_blend_auc": 0.919448
   },
-  "cnn_inference_family": "stratified_only",
-  "cnn3d_stratified_weight": 0.365654,
-  "final_bias": 0.13111480679778115,
-  "final_temperature": 0.7612935387043422,
   "optimization": {
-    "method": "repeated_cross_fitted_constrained_logit_blend",
+    "selection_and_evaluation_method": "repeated_cross_fitted_constrained_logit_blend",
     "n_splits": 5,
     "n_repeats": 10,
     "cross_fitted_log_loss": 0.36211221781695596,

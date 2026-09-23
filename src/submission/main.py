@@ -443,7 +443,10 @@ def main():
             * cnn3d_stratified_logit
         )
 
-        # Calibración cruzada del ensamble.
+        # Calibración afín desplegada. Los parámetros se
+        # reajustaron sobre el OOF completo después de la
+        # selección cross-fitted; 0.362112 es la estimación
+        # cross-fitted y 0.361771 el ajuste optimizado full-OOF.
         final_logit = (
             uncalibrated_final_logit
             + 0.131114806797781

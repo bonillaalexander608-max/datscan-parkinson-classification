@@ -5,4 +5,4 @@ compact_cnn3d_stratified,archived_submission,OOF_metadata,0.4029107053,,,Recorde
 compact_cnn3d_grouped,archived_submission,OOF_metadata,0.4151709048,,,Recorded in archived CNN metadata
 cnn3d_stratified_grouped_hybrid,archived_submission,OOF_metadata,0.380357,,,Recorded in archived CNN metadata
 final_blend_repeated_cross_fitted,archived_submission,5_folds_x_10_repeats,0.3621122178,0.9160022203,0.1117024969,Repeated cross-fitted constrained logit blend
-final_blend_executed,archived_submission,bundled_submission_metadata,0.361771,0.919448,,Executed final blend recorded in metadata
+final_blend_executed,archived_submission,full_oof_optimized_metadata,0.361771,0.919448,,Executed deployed parameters; in-sample optimized OOF value

@@ -1,0 +1,43 @@
+{
+  "blend_space": "logit",
+  "classical_fourier_variants": {
+    "axial_weight": 0.14,
+    "axial_sagittal_weight": 0.21,
+    "multiscale_weight": 0.65
+  },
+  "hierarchical_blend": {
+    "classical_stack_weight_within_current_ensemble": 0.5,
+    "adaptive_roi_weight_within_current_ensemble": 0.5,
+    "current_ensemble_weight_within_previous_full_stack": 0.625,
+    "efficientnet_weight_within_previous_full_stack": 0.375,
+    "previous_full_stack_weight_in_final_blend": 0.634346,
+    "cnn3d_stratified_weight_in_final_blend": 0.365654
+  },
+  "effective_top_level_weights": {
+    "classical_fourier_stack": 0.198233125,
+    "adaptive_roi": 0.198233125,
+    "efficientnet_b0": 0.23787975,
+    "cnn3d_stratified": 0.365654
+  },
+  "effective_flat_weights": {
+    "classical_axial": 0.0277526375,
+    "classical_axial_sagittal": 0.04162895625,
+    "classical_multiscale": 0.12885153125,
+    "adaptive_roi": 0.198233125,
+    "efficientnet_b0": 0.23787975,
+    "cnn3d_stratified": 0.365654
+  },
+  "deployed_affine_calibration": {
+    "formula": "final_logit = (uncalibrated_logit + bias) / temperature",
+    "bias": 0.13111480679778115,
+    "temperature": 0.7612935387043422,
+    "fit_scope": "complete_oof_refit_after_cross_fitted_selection"
+  },
+  "internal_estimates": {
+    "repeated_cross_fitted_log_loss": 0.36211221781695596,
+    "repeated_cross_fitted_auc": 0.9160022202631665,
+    "repeated_cross_fitted_brier": 0.11170249688969823,
+    "full_oof_optimized_log_loss": 0.361771,
+    "full_oof_optimized_auc": 0.919448
+  }
+}
